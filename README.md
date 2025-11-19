@@ -294,6 +294,61 @@ export default defineConfig({
 }
 ```
 
+### Add React Router Dom to your Vite React Project
+
+#### 1. Install React Router
+
+```bash
+pnpm install react-router-dom
+```
+
+#### 2. Create Layout
+- create main layout in src > layout folder:
+
+```javascript
+import { Outlet } from 'react-router-dom';
+import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
+
+export const MainLayout = () => {
+  return (
+    <div className="mx-auto min-h-screen max-w-screen-2xl px-6 py-6 md:px-12 md:py-12">
+      <Header />
+      <main>
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
+};
+```
+
+#### 3. React Router Configuration
+
+```javascript
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { MainLayout } from '@/layouts';
+import { HomePage, PageNotFound } from '@/pages';
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <MainLayout />,
+    errorElement: <PageNotFound />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
+      },
+    ],
+  },
+]);
+
+export default function App() {
+  return <RouterProvider router={router} />;
+}
+```
+
 ### Add Prettier to your Vite React Project
 
 #### 1. Install Prettier
