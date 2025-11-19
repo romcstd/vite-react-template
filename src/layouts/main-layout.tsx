@@ -4,9 +4,9 @@ import { Footer } from '@/components/layout/footer';
 
 export const MainLayout = () => {
   return (
-    <div className="mx-auto min-h-screen max-w-screen-2xl px-6 py-6 md:px-12 md:py-12">
+    <div className="min-h-screen">
       <Header />
-      <main>
+      <main className="max-w-screen-2xl mx-auto px-6 py-6 md:px-12 md:py-12">
         <Outlet />
       </main>
       <Footer />

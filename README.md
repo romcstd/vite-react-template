@@ -232,6 +232,13 @@ __tests__/
 └── vitest-setup.ts   # Test configuration and setup
 ```
 
+#### 14. Layouts - Test files and setup configuration
+```bash
+layouts/
+├── main-layout.tsx   # Test configuration and setup
+└── index.ts          # Export all layouts
+```
+
 ## Setup Instructions
 
 ### Install, configure and import Tailwind CSS
@@ -266,7 +273,7 @@ export default defineConfig({
 ### Path Alias Configuration
 
 #### Configure Vite
-- update your `vite.config.ts:
+- Update your `vite.config.ts:
 
 ```typescript
 import path from 'path';
@@ -281,7 +288,7 @@ export default defineConfig({
 ```
 
 #### Configure Typescript
-- update your `tsconfig.app.json:
+- Update your `tsconfig.app.json:
 
 ```json
 {
@@ -303,7 +310,7 @@ pnpm install react-router-dom
 ```
 
 #### 2. Create Layout
-- create main layout in src > layout folder:
+- Create main layout in src > layout folder:
 
 ```javascript
 import { Outlet } from 'react-router-dom';
@@ -312,9 +319,9 @@ import { Footer } from '@/components/layout/footer';
 
 export const MainLayout = () => {
   return (
-    <div className="mx-auto min-h-screen max-w-screen-2xl px-6 py-6 md:px-12 md:py-12">
+    <div className="min-h-screen">
       <Header />
-      <main>
+      <main className="max-w-screen-2xl mx-auto px-6 py-6 md:px-12 md:py-12">
         <Outlet />
       </main>
       <Footer />
@@ -324,6 +331,7 @@ export const MainLayout = () => {
 ```
 
 #### 3. React Router Configuration
+- Add react router configuration in App.tsx:
 
 ```javascript
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -447,7 +455,7 @@ export default defineConfig([
 ```
 
 #### 6. VS Code Integration (Recommended)
-- update settings.json
+- Update settings.json
 
 ```json
 {
@@ -527,7 +535,7 @@ export default defineConfig([
 ```
 
 ### Configure vercel for deployment
-- create vercel.json and configuration
+- Create vercel.json and configuration
 
 ```json
 {
@@ -569,8 +577,9 @@ export default defineConfig({
 ```
 
 #### 3. Create Test Setup File
+- Create vitest-setup.ts in src > __tests__ folder
 
-```bash
+```javascript
 import { expect, afterEach } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
