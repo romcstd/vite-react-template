@@ -232,6 +232,13 @@ __tests__/
 └── vitest-setup.ts   # Test configuration and setup
 ```
 
+#### 14. Layouts - Test files and setup configuration
+```bash
+layouts/
+├── main-layout.tsx   # Test configuration and setup
+└── index.ts          # Export all layouts
+```
+
 ## Setup Instructions
 
 ### Install, configure and import Tailwind CSS
@@ -266,7 +273,7 @@ export default defineConfig({
 ### Path Alias Configuration
 
 #### Configure Vite
-- update your `vite.config.ts:
+- Update your `vite.config.ts:
 
 ```typescript
 import path from 'path';
@@ -281,7 +288,7 @@ export default defineConfig({
 ```
 
 #### Configure Typescript
-- update your `tsconfig.app.json:
+- Update your `tsconfig.app.json:
 
 ```json
 {
@@ -291,6 +298,62 @@ export default defineConfig({
       "@/*": ["./src/*"]
     }
   }
+}
+```
+
+### Add React Router Dom to your Vite React Project
+
+#### 1. Install React Router
+
+```bash
+pnpm install react-router-dom
+```
+
+#### 2. Create Layout
+- Create main layout in src > layout folder:
+
+```javascript
+import { Outlet } from 'react-router-dom';
+import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
+
+export const MainLayout = () => {
+  return (
+    <div className="min-h-screen">
+      <Header />
+      <main className="max-w-screen-2xl mx-auto px-6 py-6 md:px-12 md:py-12">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
+};
+```
+
+#### 3. React Router Configuration
+- Add react router configuration in App.tsx:
+
+```javascript
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { MainLayout } from '@/layouts';
+import { HomePage, PageNotFound } from '@/pages';
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <MainLayout />,
+    errorElement: <PageNotFound />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
+      },
+    ],
+  },
+]);
+
+export default function App() {
+  return <RouterProvider router={router} />;
 }
 ```
 
@@ -392,7 +455,7 @@ export default defineConfig([
 ```
 
 #### 6. VS Code Integration (Recommended)
-- update settings.json
+- Update settings.json
 
 ```json
 {
@@ -472,7 +535,7 @@ export default defineConfig([
 ```
 
 ### Configure vercel for deployment
-- create vercel.json and configuration
+- Create vercel.json and configuration
 
 ```json
 {
@@ -514,8 +577,9 @@ export default defineConfig({
 ```
 
 #### 3. Create Test Setup File
+- Create vitest-setup.ts in src > __tests__ folder
 
-```bash
+```javascript
 import { expect, afterEach } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
@@ -550,4 +614,116 @@ afterEach(() => {
     "test:coverage": "vitest --coverage"
   }
 }
+```
+
+### Add Github Actions to your project
+
+#### 1. Create the GitHub Actions folder
+- In your project root, create this folder structure:
+
+```bash
+.your-project/
+└── .github/
+    └── workflows/
+```
+
+#### 2. Step 2: Create a workflow YAML file
+- Inside .github/workflows/, create a YAML file. You can name it anything, for example:
+
+```bash
+pr-checks.yml
+```
+
+#### 3. Define the workflow
+- Open pr-checks.yml and add a basic workflow template. Example:
+
+```yml
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [master, development]
+  push:
+    branches: [master, development]
+
+jobs:
+  ci:
+    name: Lint, Format & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run ESLint
+        run: pnpm lint
+
+      - name: Run Prettier check
+        run: pnpm format
+
+      - name: Run TypeScript compiler
+        run: pnpm tsc
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: ci  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Vitest
+        run: pnpm test
+
+  build:
+    name: Build Project
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build React Vite app
+        run: pnpm run build
 ```
