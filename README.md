@@ -615,3 +615,115 @@ afterEach(() => {
   }
 }
 ```
+
+### Add Github Actions to your project
+
+#### 1. Create the GitHub Actions folder
+- In your project root, create this folder structure:
+
+```bash
+.your-project/
+└── .github/
+    └── workflows/
+```
+
+#### 2. Step 2: Create a workflow YAML file
+- Inside .github/workflows/, create a YAML file. You can name it anything, for example:
+
+```bash
+pr-checks.yml
+```
+
+#### 3. Define the workflow
+- Open pr-checks.yml and add a basic workflow template. Example:
+
+```yml
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [master, development]
+  push:
+    branches: [master, development]
+
+jobs:
+  ci:
+    name: Lint, Format & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run ESLint
+        run: pnpm lint
+
+      - name: Run Prettier check
+        run: pnpm format
+
+      - name: Run TypeScript compiler
+        run: pnpm tsc
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: ci  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Vitest
+        run: pnpm test
+
+  build:
+    name: Build Project
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build React Vite app
+        run: pnpm run build
+```
